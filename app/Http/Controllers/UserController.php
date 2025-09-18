@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -32,13 +33,17 @@ class UserController extends Controller
 
     {
         $params = $request->validate([
-            'name' => 'required|max:50',
-            'email' => 'required|max:50',
-            'password' => 'required|max:50',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
         ]);
+
         User::create($params);
-        $users = User::all();
-        return view('user.index', compact('users'));
+        return redirect()->route('users.index')
+            ->with('success', 'Foydalanuvchi muvaffaqiyatli qo‘shildi!');
+
+//        $users = User::all();
+//        return view('user.index', compact('users'));
 //        return redirect()->route('user.index', compact('users'));
     }
 
@@ -66,9 +71,13 @@ class UserController extends Controller
     {
         $user=User::find($id);
         $params = $request->validate([
-            'name' => 'required|max:50',
-            'email' => 'required|max:50',
-            'password' => 'required|max:50',
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users', 'email')->ignore($user->id),
+            ],
+            'password' => 'required|string|min:6',
         ]);
         $user->name=$request->input('name');
         $user->email=$request->input('email');
@@ -86,7 +95,7 @@ class UserController extends Controller
 
         $user=User::find($id);
         $user->forceDelete();
-        $users = User::all();
-        return view('user.index', compact('users'));
+        return redirect()->route('users.index')
+            ->with('success', 'Foydalanuvchi o‘chirildi!');
     }
 }
