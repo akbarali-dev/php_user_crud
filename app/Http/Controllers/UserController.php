@@ -84,7 +84,10 @@ class UserController extends Controller
         $user->password=$request->input('password');
         $user->update();
         $users = User::all();
-        return view('user.index', compact('users'));
+        return redirect()->route('users.index')
+            ->with('success', 'User created successfully.');
+
+//        return view('user.index', compact('users'));
     }
 
     /**
@@ -92,10 +95,18 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-
         $user=User::find($id);
+
+        if (!$user) {
+            abort(404, 'User not found.');
+        }
+
         $user->forceDelete();
+
         return redirect()->route('users.index')
-            ->with('success', 'Foydalanuvchi o‘chirildi!');
+            ->with('success', 'User deleted successfully.');
+
+//        return redirect()->route('users.index')
+//            ->with('success', 'Foydalanuvchi o‘chirildi!');
     }
 }
