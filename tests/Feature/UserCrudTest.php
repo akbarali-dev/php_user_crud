@@ -15,7 +15,6 @@ class UserCrudTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Har bir testda login bo‘lgan user
         $this->authUser = User::factory()->create();
         $this->actingAs($this->authUser);
     }
